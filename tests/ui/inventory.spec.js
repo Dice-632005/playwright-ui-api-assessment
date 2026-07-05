@@ -1,5 +1,5 @@
 import { test, expect } from '../fixtures/pages.js';
-import { uiTestData } from '../test-data.js';
+import { uiTestData } from '../testdata/test-data.js';
 
 test.describe('Inventory Management Tests', () => {
     test('Verify shopping cart count is updated when items are added', async ({ authenticatedInventoryPage }) => {

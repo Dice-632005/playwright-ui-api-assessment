@@ -27,7 +27,7 @@ Covered in `tests/api/restful-booker.spec.js`:
 
 ## Test Data Management
 
-API test data lives in `tests/test-data.js` and is centralized via:
+API test data lives in `tests/testdata/test-data.js` and is centralized via:
 
 - `apiTestData` for static defaults (auth, booking defaults, updated booking values)
 - `buildBookingPayload()` to generate unique booking data per run
