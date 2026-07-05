@@ -2,7 +2,7 @@ import { test, expect } from '../fixtures/pages.js';
 import { uiTestData } from '../test-data.js';
 
 test.describe('Inventory Management Tests', () => {
-    test('should update shopping cart count when items are added', async ({ authenticatedInventoryPage }) => {
+    test('Verify shopping cart count is updated when items are added', async ({ authenticatedInventoryPage }) => {
         const inventoryPage = authenticatedInventoryPage;
         const initialCount = Number(await inventoryPage.getCartQuantity()) || 0;
 
@@ -18,7 +18,7 @@ test.describe('Inventory Management Tests', () => {
         console.log(`Initial Count: ${initialCount + 3}, Updated Count: ${updatedCount}`);
     });
 
-    test('should remove items from cart and update count', async ({ authenticatedInventoryPage }) => {
+    test('Verify items are removed from cart and count is updated', async ({ authenticatedInventoryPage }) => {
         const inventoryPage = authenticatedInventoryPage;
         const initialCount = Number(await inventoryPage.getCartQuantity()) || 0;
 
@@ -35,9 +35,9 @@ test.describe('Inventory Management Tests', () => {
         console.log(`Initial Count: ${initialCount + 2}, Updated Count: ${updatedCount}`);
     });
 
-    test('should sort products', async ({ authenticatedInventoryPage }) => {
+    test('Verify product sorting', async ({ authenticatedInventoryPage }) => {
         const inventoryPage = authenticatedInventoryPage;
-        await test.step('should sort products by price (low to high)', async () => {
+        await test.step('Verify products are sorted by price (low to high)', async () => {
             await inventoryPage.sortProducts(uiTestData.sortOptions.priceLowToHigh);
             const productPrices = await inventoryPage.page.$$eval('.inventory_item_price', prices =>
                 prices.map(price => parseFloat(price.textContent.replace(/[^\d.]/g, '')))
@@ -47,7 +47,7 @@ test.describe('Inventory Management Tests', () => {
             console.log(`Sorted Prices (Low to High): ${productPrices.join(', ')}`);
         });
 
-        await test.step('should sort products by price (high to low)', async () => {
+        await test.step('Verify products are sorted by price (high to low)', async () => {
             await inventoryPage.sortProducts(uiTestData.sortOptions.priceHighToLow);
             const productPrices = await inventoryPage.page.$$eval('.inventory_item_price', prices =>
                 prices.map(price => parseFloat(price.textContent.replace(/[^\d.]/g, '')))
@@ -57,7 +57,7 @@ test.describe('Inventory Management Tests', () => {
             console.log(`Sorted Prices (High to Low): ${productPrices.join(', ')}`);
         });
 
-        await test.step('should sort products by name (A to Z)', async () => {
+        await test.step('Verify products are sorted by name (A to Z)', async () => {
             await inventoryPage.sortProducts(uiTestData.sortOptions.nameAtoZ);
             const productNames = await inventoryPage.page.$$eval('.inventory_item_name', names =>
                 names.map(name => name.textContent.trim())
@@ -67,7 +67,7 @@ test.describe('Inventory Management Tests', () => {
             console.log(`Sorted Names (A to Z): ${productNames.join(', ')}`);
         });
 
-        await test.step('should sort products by name (Z to A)', async () => {
+        await test.step('Verify products are sorted by name (Z to A)', async () => {
             await inventoryPage.sortProducts(uiTestData.sortOptions.nameZtoA);
             const productNames = await inventoryPage.page.$$eval('.inventory_item_name', names =>
                 names.map(name => name.textContent.trim())

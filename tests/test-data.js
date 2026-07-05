@@ -1,57 +1,27 @@
-function resolveEnvValue(envNames) {
-  for (const envName of envNames) {
-    const value = process.env[envName];
-    if (value && value.trim().length > 0) {
-      return value;
-    }
+function resolveRequiredEnvValue(envName) {
+  const value = process.env[envName];
+  if (value && value.trim().length > 0) {
+    return value;
   }
 
-  throw new Error(`Missing required environment variable. Set one of: ${envNames.join(', ')}`);
+  throw new Error(`Missing required environment variable: ${envName}`);
 }
 
-const standardUsername = resolveEnvValue(
-  ['SAUCE_USERNAME', 'SAUCE_STANDARD_USERNAME', 'SAUCEDEMO_STANDARD_USERNAME', 'GITHUB_SAUCE_USERNAME']
-);
-const standardPassword = resolveEnvValue(
-  ['SAUCE_PASSWORD', 'SAUCE_STANDARD_PASSWORD', 'SAUCEDEMO_STANDARD_PASSWORD', 'GITHUB_SAUCE_PASSWORD']
-);
-const lockedOutUsername = resolveEnvValue(
-  ['SAUCE_LOCKED_OUT_USERNAME', 'SAUCEDEMO_LOCKED_OUT_USERNAME', 'GITHUB_SAUCE_LOCKED_OUT_USERNAME']
-);
-const lockedOutPassword = resolveEnvValue(
-  ['SAUCE_LOCKED_OUT_PASSWORD', 'SAUCEDEMO_LOCKED_OUT_PASSWORD', 'GITHUB_SAUCE_LOCKED_OUT_PASSWORD']
-);
-const problemUsername = resolveEnvValue(
-  ['SAUCE_PROBLEM_USERNAME', 'SAUCEDEMO_PROBLEM_USERNAME', 'GITHUB_SAUCE_PROBLEM_USERNAME']
-);
-const problemPassword = resolveEnvValue(
-  ['SAUCE_PROBLEM_PASSWORD', 'SAUCEDEMO_PROBLEM_PASSWORD', 'GITHUB_SAUCE_PROBLEM_PASSWORD']
-);
-const performanceUsername = resolveEnvValue(
-  ['SAUCE_PERFORMANCE_USERNAME', 'SAUCEDEMO_PERFORMANCE_USERNAME', 'GITHUB_SAUCE_PERFORMANCE_USERNAME']
-);
-const performancePassword = resolveEnvValue(
-  ['SAUCE_PERFORMANCE_PASSWORD', 'SAUCEDEMO_PERFORMANCE_PASSWORD', 'GITHUB_SAUCE_PERFORMANCE_PASSWORD']
-);
-const errorUsername = resolveEnvValue(
-  ['SAUCE_ERROR_USERNAME', 'SAUCEDEMO_ERROR_USERNAME', 'GITHUB_SAUCE_ERROR_USERNAME']
-);
-const errorPassword = resolveEnvValue(
-  ['SAUCE_ERROR_PASSWORD', 'SAUCEDEMO_ERROR_PASSWORD', 'GITHUB_SAUCE_ERROR_PASSWORD']
-);
-const visualUsername = resolveEnvValue(
-  ['SAUCE_VISUAL_USERNAME', 'SAUCEDEMO_VISUAL_USERNAME', 'GITHUB_SAUCE_VISUAL_USERNAME']
-);
-const visualPassword = resolveEnvValue(
-  ['SAUCE_VISUAL_PASSWORD', 'SAUCEDEMO_VISUAL_PASSWORD', 'GITHUB_SAUCE_VISUAL_PASSWORD']
-);
+const standardUsername = resolveRequiredEnvValue('SAUCE_USERNAME');
+const standardPassword = resolveRequiredEnvValue('SAUCE_PASSWORD');
+const lockedOutUsername = resolveRequiredEnvValue('SAUCE_LOCKED_OUT_USERNAME');
+const lockedOutPassword = resolveRequiredEnvValue('SAUCE_LOCKED_OUT_PASSWORD');
+const problemUsername = resolveRequiredEnvValue('SAUCE_PROBLEM_USERNAME');
+const problemPassword = resolveRequiredEnvValue('SAUCE_PROBLEM_PASSWORD');
+const performanceUsername = resolveRequiredEnvValue('SAUCE_PERFORMANCE_USERNAME');
+const performancePassword = resolveRequiredEnvValue('SAUCE_PERFORMANCE_PASSWORD');
+const errorUsername = resolveRequiredEnvValue('SAUCE_ERROR_USERNAME');
+const errorPassword = resolveRequiredEnvValue('SAUCE_ERROR_PASSWORD');
+const visualUsername = resolveRequiredEnvValue('SAUCE_VISUAL_USERNAME');
+const visualPassword = resolveRequiredEnvValue('SAUCE_VISUAL_PASSWORD');
 
-const bookerUsername = resolveEnvValue(
-  ['BOOKER_USERNAME', 'BOOKER_AUTH_USERNAME', 'RESTFUL_BOOKER_USERNAME', 'GITHUB_BOOKER_USERNAME']
-);
-const bookerPassword = resolveEnvValue(
-  ['BOOKER_PASSWORD', 'BOOKER_AUTH_PASSWORD', 'RESTFUL_BOOKER_PASSWORD', 'GITHUB_BOOKER_PASSWORD']
-);
+const bookerUsername = resolveRequiredEnvValue('BOOKER_USERNAME');
+const bookerPassword = resolveRequiredEnvValue('BOOKER_PASSWORD');
 
 export const uiTestData = {
   users: {
@@ -77,6 +47,13 @@ export const uiTestData = {
     firstName: 'Test',
     lastName: 'User',
     postalCode: '12345',
+  },
+  urls: {
+    login: 'https://www.saucedemo.com/',
+    inventory: 'https://www.saucedemo.com/inventory.html',
+  },
+  authenticationErrors: {
+    lockedOutUser: 'Epic sadface: Sorry, this user has been locked out.',
   },
 };
 
@@ -106,11 +83,11 @@ export const saucedemoUsers = uiTestData.users;
 export const saucedemoProducts = uiTestData.products;
 export const bookingCredentials = apiTestData.auth;
 export const successfulLoginUsers = [
-  { key: 'standard_user', data: saucedemoUsers.standard_user },
-  { key: 'problem_user', data: saucedemoUsers.problem_user },
-  { key: 'performance_glitch_user', data: saucedemoUsers.performance_glitch_user },
-  { key: 'error_user', data: saucedemoUsers.error_user },
-  { key: 'visual_user', data: saucedemoUsers.visual_user },
+  'standard_user',
+  'problem_user',
+  'performance_glitch_user',
+  'error_user',
+  'visual_user',
 ];
 
 export function buildBookingPayload() {

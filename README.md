@@ -45,17 +45,27 @@ npm install
 
 Credentials are loaded from environment variables only. A local `.env` file is supported for local runs and should not be committed.
 
+For local execution, create `.env` by copying `.env.example`, then replace all `__REQUIRED__` values with real usernames and passwords.
+
+PowerShell example:
+
+```powershell
+Copy-Item .env.example .env
+```
+
 Supported variable names:
 
-- SauceDemo standard user: `SAUCE_USERNAME` (or `SAUCE_STANDARD_USERNAME`)
-- SauceDemo standard password: `SAUCE_PASSWORD` (or `SAUCE_STANDARD_PASSWORD`)
+- SauceDemo standard user: `SAUCE_USERNAME`
+- SauceDemo standard password: `SAUCE_PASSWORD`
 - SauceDemo locked user: `SAUCE_LOCKED_OUT_USERNAME`, `SAUCE_LOCKED_OUT_PASSWORD`
 - SauceDemo problem user: `SAUCE_PROBLEM_USERNAME`, `SAUCE_PROBLEM_PASSWORD`
 - SauceDemo performance user: `SAUCE_PERFORMANCE_USERNAME`, `SAUCE_PERFORMANCE_PASSWORD`
 - SauceDemo error user: `SAUCE_ERROR_USERNAME`, `SAUCE_ERROR_PASSWORD`
 - SauceDemo visual user: `SAUCE_VISUAL_USERNAME`, `SAUCE_VISUAL_PASSWORD`
-- Restful-Booker username: `BOOKER_USERNAME` (or `BOOKER_AUTH_USERNAME`)
-- Restful-Booker password: `BOOKER_PASSWORD` (or `BOOKER_AUTH_PASSWORD`)
+- Restful-Booker username: `BOOKER_USERNAME`
+- Restful-Booker password: `BOOKER_PASSWORD`
+
+All usernames and passwords above are required. If any variable is missing or blank, tests fail fast.
 
 There are no hardcoded credential fallbacks in test code. If required variables are missing, test execution fails.
 
@@ -100,7 +110,7 @@ Playwright is configured to generate:
 
 - List reporter (terminal)
 - Playwright HTML report at `playwright-report/`
-- Monocart custom report at `monocart-report/index.html`
+- Monocart custom report at `monocart-report/sauceDemoMonocartReport.html`
 
 Open Playwright HTML report:
 
@@ -110,13 +120,19 @@ npm run report:html
 
 Open Monocart report by opening this file in your browser:
 
-- `monocart-report/index.html`
+- `monocart-report/sauceDemoMonocartReport.html`
+
+Or run:
+
+```bash
+npm run report:monocart
+```
 
 ## CI/CD (GitHub Actions)
 
 Workflow file:
 
-- `.github/workflows/api-tests.yml`
+- `.github/workflows/suaceDemo-ui-api-tests.yml`
 
 What it does:
 
