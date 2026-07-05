@@ -2,7 +2,7 @@ import { test, expect } from '../fixtures/pages.js';
 import { uiTestData } from '../test-data.js';
 
 test.describe('Inventory Management Tests', () => {
-    test('should update shopping cart count when items are added', async ({ authenticatedInventoryPage }) => {
+    test('Verify shopping cart count is updated when items are added', async ({ authenticatedInventoryPage }) => {
         const inventoryPage = authenticatedInventoryPage;
         const initialCount = Number(await inventoryPage.getCartQuantity()) || 0;
 
