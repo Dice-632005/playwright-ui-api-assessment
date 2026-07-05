@@ -25,7 +25,7 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['monocart-reporter', { name: 'Playwright Monocart Report', outputFile: './monocart-report/index.html' }],
+    ['monocart-reporter', { name: 'Playwright Monocart Report', outputFile: './monocart-report/sauceDemoMonocartReport.html' }],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

@@ -19,7 +19,7 @@ function expectBookingShape(booking) {
 }
 
 test.describe('Restful Booker API tests', () => {
-  test('should generate a valid auth token', async ({ request }) => {
+  test('Verify a valid auth token is generated', async ({ request }) => {
     const client = new BookerClient(request);
     const response = await client.authToken(bookingCredentials);
 
@@ -31,56 +31,75 @@ test.describe('Restful Booker API tests', () => {
     expect(typeof body.token).toBe('string');
   });
 
-  test('should perform booking CRUD operations including DELETE', async ({ request }) => {
+  test('Verify booking CRUD operations including DELETE', async ({ request }) => {
     const client = new BookerClient(request);
     const createBookingPayload = buildBookingPayload();
+    let bookingId;
+    let bookingBeforeUpdate;
+    let token;
+    let updatedPayload;
 
-    const createResponse = await client.createBooking(createBookingPayload);
-    expect(createResponse.status()).toBe(200);
-    expect(createResponse.headers()['content-type']).toContain('application/json');
+    await test.step('Verify booking is created successfully', async () => {
+      const createResponse = await client.createBooking(createBookingPayload);
+      expect(createResponse.status()).toBe(200);
+      expect(createResponse.headers()['content-type']).toContain('application/json');
 
-    const createBody = await createResponse.json();
-    expect(createBody.bookingid).toBeGreaterThan(0);
-    expectBookingShape(createBody.booking);
-    expect(createBody.booking).toEqual(expect.objectContaining(createBookingPayload));
+      const body = await createResponse.json();
+      expect(body.bookingid).toBeGreaterThan(0);
+      expectBookingShape(body.booking);
+      expect(body.booking).toEqual(expect.objectContaining(createBookingPayload));
+      bookingId = body.bookingid;
+      expect(bookingId).toBeGreaterThan(0);
+    });
 
-    const bookingId = createBody.bookingid;
-    const getResponse = await client.getBooking(bookingId);
-    expect(getResponse.status()).toBe(200);
-    expect(getResponse.headers()['content-type']).toContain('application/json');
+    await test.step('Verify booking can be read before update', async () => {
+      const getResponse = await client.getBooking(bookingId);
+      expect(getResponse.status()).toBe(200);
+      expect(getResponse.headers()['content-type']).toContain('application/json');
 
-    const bookingBeforeUpdate = await getResponse.json();
-    expectBookingShape(bookingBeforeUpdate);
-    expect(bookingBeforeUpdate).toEqual(expect.objectContaining(createBookingPayload));
+      bookingBeforeUpdate = await getResponse.json();
+      expectBookingShape(bookingBeforeUpdate);
+      expect(bookingBeforeUpdate).toEqual(expect.objectContaining(createBookingPayload));
+    });
 
-    const authResponse = await client.authToken(bookingCredentials);
-    expect(authResponse.status()).toBe(200);
+    await test.step('Verify auth token can be retrieved', async () => {
+      const authResponse = await client.authToken(bookingCredentials);
+      expect(authResponse.status()).toBe(200);
 
-    const authBody = await authResponse.json();
-    const token = authBody.token;
-    expect(token).toBeTruthy();
+      const authBody = await authResponse.json();
+      expect(authBody.token).toBeTruthy();
+      token = authBody.token;
+      expect(token).toBeTruthy();
+    });
 
-    const updatedPayload = buildUpdatedBookingPayload(bookingBeforeUpdate);
+    updatedPayload = buildUpdatedBookingPayload(bookingBeforeUpdate);
 
-    const updateResponse = await client.updateBooking(bookingId, updatedPayload, token);
-    expect(updateResponse.status()).toBe(200);
-    expect(updateResponse.headers()['content-type']).toContain('application/json');
+    await test.step('Verify booking is updated successfully', async () => {
+      const updateResponse = await client.updateBooking(bookingId, updatedPayload, token);
+      expect(updateResponse.status()).toBe(200);
+      expect(updateResponse.headers()['content-type']).toContain('application/json');
 
-    const updatedBody = await updateResponse.json();
-    expectBookingShape(updatedBody);
-    expect(updatedBody).toEqual(expect.objectContaining(updatedPayload));
+      const updatedBody = await updateResponse.json();
+      expectBookingShape(updatedBody);
+      expect(updatedBody).toEqual(expect.objectContaining(updatedPayload));
+      
+    });
 
-    const getAfterUpdateResponse = await client.getBooking(bookingId);
-    expect(getAfterUpdateResponse.status()).toBe(200);
+    await test.step('Verify booking can be read after update', async () => {
+      const getAfterUpdateResponse = await client.getBooking(bookingId);
+      expect(getAfterUpdateResponse.status()).toBe(200);
 
-    const bookingAfterUpdate = await getAfterUpdateResponse.json();
-    expectBookingShape(bookingAfterUpdate);
-    expect(bookingAfterUpdate).toEqual(expect.objectContaining(updatedPayload));
+      const bookingAfterUpdate = await getAfterUpdateResponse.json();
+      expectBookingShape(bookingAfterUpdate);
+      expect(bookingAfterUpdate).toEqual(expect.objectContaining(updatedPayload));
+    });
 
-    const deleteResponse = await client.deleteBooking(bookingId, token);
-    expect([200, 201]).toContain(deleteResponse.status());
+    await test.step('Verify booking is deleted successfully', async () => {
+      const deleteResponse = await client.deleteBooking(bookingId, token);
+      expect([200, 201]).toContain(deleteResponse.status());
 
-    const verifyDeleteResponse = await client.getBooking(bookingId);
-    expect(verifyDeleteResponse.status()).toBe(404);
+      const verifyDeleteResponse = await client.getBooking(bookingId);
+      expect(verifyDeleteResponse.status()).toBe(404);
+    });
   });
 });

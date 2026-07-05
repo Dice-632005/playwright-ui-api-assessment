@@ -7,7 +7,7 @@
     "test": "playwright test",
     "test:api": "playwright test tests/api/restful-booker.spec.js --workers=1 --project=api",
     "report:html": "playwright show-report",
-    "report:monocart": "monocart show-report monocart-report/index.html"
+    "report:monocart": "monocart show-report monocart-report/sauceDemoMonocartReport.html"
   },
   "repository": {
     "type": "git",

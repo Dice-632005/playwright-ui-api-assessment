@@ -1,12 +1,12 @@
 import { test, expect } from '../fixtures/pages.js';
 import { uiTestData } from '../test-data.js';
 
-test.describe('Cart flow', () => {
+test.describe('Cart Checkout Tests', () => {
   test('cartCheckout', async ({ authenticatedInventoryPage, cartPage, checkoutPage }) => {
     const inventoryPage = authenticatedInventoryPage;
     let cartQuantityAfterRemove = 0;
 
-    await test.step('add items to cart', async () => {
+    await test.step('Verify items are added to cart', async () => {
       await inventoryPage.addProductsToCart([
         uiTestData.products.backpack.name,
         uiTestData.products.bikeLight.name,
@@ -17,14 +17,14 @@ test.describe('Cart flow', () => {
       expect(cartQuantityAfterAdd).toBe(3);
     });
 
-    await test.step('Shouldremove one item from cart', async () => {
+    await test.step('Verify items are removed from cart', async () => {
       await inventoryPage.removeProductFromCart(uiTestData.products.backpack.name);
 
       cartQuantityAfterRemove = Number(await inventoryPage.getCartQuantity());
       expect(cartQuantityAfterRemove).toBe(2);
     });
 
-    await test.step('Should calculate total and checkout successfully', async () => {
+    await test.step('Verify items total is calculated correctly and checkout successfully', async () => {
       await inventoryPage.openCart();
 
       const cartItems = inventoryPage.page.locator('.cart_item');
