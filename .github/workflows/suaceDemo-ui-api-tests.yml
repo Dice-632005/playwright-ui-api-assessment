@@ -1,0 +1,90 @@
+name: UI and API Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  ui-api-tests:
+    runs-on: ubuntu-latest
+    env:
+      SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+      SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
+      SAUCE_LOCKED_OUT_USERNAME: ${{ secrets.SAUCE_LOCKED_OUT_USERNAME }}
+      SAUCE_LOCKED_OUT_PASSWORD: ${{ secrets.SAUCE_LOCKED_OUT_PASSWORD }}
+      SAUCE_PROBLEM_USERNAME: ${{ secrets.SAUCE_PROBLEM_USERNAME }}
+      SAUCE_PROBLEM_PASSWORD: ${{ secrets.SAUCE_PROBLEM_PASSWORD }}
+      SAUCE_PERFORMANCE_USERNAME: ${{ secrets.SAUCE_PERFORMANCE_USERNAME }}
+      SAUCE_PERFORMANCE_PASSWORD: ${{ secrets.SAUCE_PERFORMANCE_PASSWORD }}
+      SAUCE_ERROR_USERNAME: ${{ secrets.SAUCE_ERROR_USERNAME }}
+      SAUCE_ERROR_PASSWORD: ${{ secrets.SAUCE_ERROR_PASSWORD }}
+      SAUCE_VISUAL_USERNAME: ${{ secrets.SAUCE_VISUAL_USERNAME }}
+      SAUCE_VISUAL_PASSWORD: ${{ secrets.SAUCE_VISUAL_PASSWORD }}
+      BOOKER_USERNAME: ${{ secrets.BOOKER_USERNAME }}
+      BOOKER_PASSWORD: ${{ secrets.BOOKER_PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Validate required GitHub secrets
+        run: |
+          missing=0
+          required_vars=(
+            SAUCE_USERNAME
+            SAUCE_PASSWORD
+            SAUCE_LOCKED_OUT_USERNAME
+            SAUCE_LOCKED_OUT_PASSWORD
+            SAUCE_PROBLEM_USERNAME
+            SAUCE_PROBLEM_PASSWORD
+            SAUCE_PERFORMANCE_USERNAME
+            SAUCE_PERFORMANCE_PASSWORD
+            SAUCE_ERROR_USERNAME
+            SAUCE_ERROR_PASSWORD
+            SAUCE_VISUAL_USERNAME
+            SAUCE_VISUAL_PASSWORD
+            BOOKER_USERNAME
+            BOOKER_PASSWORD
+          )
+
+          for var_name in "${required_vars[@]}"; do
+            if [ -z "${!var_name}" ]; then
+              echo "::error::Missing required GitHub secret: ${var_name}"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Run full UI and API test suites
+        run: npx playwright test --workers=1
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-html-report
+          path: playwright-report/
+
+      - name: Upload Monocart report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monocart-report
+          path: monocart-report/
