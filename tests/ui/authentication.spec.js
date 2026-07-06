@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../../pages/loginPage.js';
-import { saucedemoUsers, successfulLoginUsers, uiTestData } from '../test-data.js';
+import { LoginPage } from '../../pages/ui/loginPage.js';
+import { saucedemoUsers, successfulLoginUsers, uiTestData } from '../testdata/test-data.js';
 
 test.describe('Authentication (multiple user types)', () => {
   for (const userKey of successfulLoginUsers) {

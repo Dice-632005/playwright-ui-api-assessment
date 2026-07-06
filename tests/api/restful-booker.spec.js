@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { BookerClient } from '../../api/bookerClient.js';
-import { bookingCredentials, buildBookingPayload, buildUpdatedBookingPayload } from '../test-data.js';
+import { BookerClient } from '../../pages/api/bookerClient.js';
+import { bookingCredentials, buildBookingPayload, buildUpdatedBookingPayload } from '../testdata/test-data.js';
 
 function expectBookingShape(booking) {
   expect(booking).toEqual(

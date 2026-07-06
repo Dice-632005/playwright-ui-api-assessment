@@ -1,9 +1,9 @@
 import { test as base, expect as baseExpect } from '@playwright/test';
-import { LoginPage } from '../../pages/loginPage.js';
-import { InventoryPage } from '../../pages/inventoryPage.js';
-import { CartPage } from '../../pages/cartPage.js';
-import { CheckoutPage } from '../../pages/checkoutPage.js';
-import { uiTestData } from '../test-data.js';
+import { LoginPage } from '../../pages/ui/loginPage.js';
+import { InventoryPage } from '../../pages/ui/inventoryPage.js';
+import { CartPage } from '../../pages/ui/cartPage.js';
+import { CheckoutPage } from '../../pages/ui/checkoutPage.js';
+import { uiTestData } from '../testdata/test-data.js';
 
 export const test = base.extend({
   loginPage: async ({ page }, use) => {

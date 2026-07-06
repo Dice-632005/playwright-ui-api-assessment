@@ -1,5 +1,5 @@
 import { test, expect } from '../fixtures/pages.js';
-import { uiTestData } from '../test-data.js';
+import { uiTestData } from '../testdata/test-data.js';
 
 test.describe('Cart Checkout Tests', () => {
   test('Verify cart totals and checkout completion', async ({ authenticatedInventoryPage, cartPage, checkoutPage }) => {
