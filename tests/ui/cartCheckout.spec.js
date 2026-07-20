@@ -1,20 +1,19 @@
 import { test, expect } from '../fixtures/pages.js';
 import { uiTestData } from '../testdata/test-data.js';
+import { getDefaultProductNames } from '../helpers/ui-helpers.js';
 
 test.describe('Cart Checkout Tests', () => {
+  const cartProducts = getDefaultProductNames(uiTestData.products);
+
   test('Verify cart totals and checkout completion', async ({ authenticatedInventoryPage, cartPage, checkoutPage }) => {
     const inventoryPage = authenticatedInventoryPage;
     let cartQuantityAfterRemove = 0;
 
     await test.step('Verify items are added to cart', async () => {
-      await inventoryPage.addProductsToCart([
-        uiTestData.products.backpack.name,
-        uiTestData.products.bikeLight.name,
-        uiTestData.products.boltTShirt.name,
-      ]);
+      await inventoryPage.addProductsToCart(cartProducts);
 
       const cartQuantityAfterAdd = await inventoryPage.getCartQuantity();
-      expect(cartQuantityAfterAdd).toBe(3);
+      expect(cartQuantityAfterAdd).toBe(cartProducts.length);
     });
 
     await test.step('Verify items are removed from cart', async () => {
@@ -35,17 +34,12 @@ test.describe('Cart Checkout Tests', () => {
       await checkoutPage.fillCustomerInformation(uiTestData.checkoutCustomer);
       await checkoutPage.continueToOverview();
 
-      // Retrieve financial summary calculations from checkout overview
-      const cartItemTotal = await checkoutPage.calculateItemsTotal();
-      const cartSubTotal = await checkoutPage.getSummarySubtotal();
-      const cartTax = await checkoutPage.getSummaryTax();
-      const cartTotal = await checkoutPage.getSummaryTotal();
-      const cartCalculatedTotal = cartSubTotal + cartTax;
+      const summary = await checkoutPage.getOverviewFinancialSummary();
 
       // Assert item calculation accuracy and non-zero total
-      expect(cartItemTotal).toBe(cartSubTotal);
-      expect(cartCalculatedTotal).toBeCloseTo(cartTotal, 2);
-      expect(cartTotal).toBeGreaterThan(0);
+      expect(summary.itemTotal).toBe(summary.subtotal);
+      expect(summary.calculatedTotal).toBeCloseTo(summary.total, 2);
+      expect(summary.total).toBeGreaterThan(0);
     });
   });
 });

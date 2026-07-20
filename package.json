@@ -7,7 +7,7 @@
     "test:ui": "playwright test --project=chromium --project=firefox --project=webkit",
     "test:api": "playwright test tests/api/restful-booker.spec.js --workers=1 --project=api",
     "report:html": "playwright show-report",
-    "report:allure:generate": "allure generate allure-results --clean -o allure-report",
+    "report:allure:generate": "allure generate allure-results --clean --single-file -o allure-report",
     "report:allure:open": "allure open allure-report",
     "report:monocart": "monocart show-report monocart-report/sauceDemoMonocartReport.html"
   },

@@ -89,6 +89,25 @@ export class CheckoutPage {
   }
 
   /**
+   * Returns checkout overview totals and derived total for one-pass assertions.
+   * @returns {Promise<{itemTotal: number, subtotal: number, tax: number, total: number, calculatedTotal: number}>}
+   */
+  async getOverviewFinancialSummary() {
+    const itemTotal = await this.calculateItemsTotal();
+    const subtotal = await this.getSummarySubtotal();
+    const tax = await this.getSummaryTax();
+    const total = await this.getSummaryTotal();
+
+    return {
+      itemTotal,
+      subtotal,
+      tax,
+      total,
+      calculatedTotal: subtotal + tax,
+    };
+  }
+
+  /**
    * Retrieves order completion confirmation message.
    * @returns {Promise<string | null>}
    */

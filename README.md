@@ -110,6 +110,7 @@ Playwright is configured to generate:
 
 - List reporter (terminal)
 - Playwright HTML report at `playwright-report/`
+- Allure report at `allure-report/`
 - Monocart custom report at `monocart-report/sauceDemoMonocartReport.html`
 
 Open Playwright HTML report:
@@ -128,15 +129,30 @@ Or run:
 npm run report:monocart
 ```
 
+Generate Allure report:
+
+```bash
+npm run report:allure:generate
+```
+
+Open Allure report locally with the Allure server:
+
+```bash
+npm run report:allure:open
+```
+
+CI uses Allure `--single-file` output so downloaded artifacts can be opened directly without `unable to fetch` errors.
+
 ## CI/CD (GitHub Actions)
 
 Workflow file:
 
-- `.github/workflows/suaceDemo-ui-api-tests.yml`
+- `.github/workflows/sauceDemo-ui-api-tests.yml`
 
 What it does:
 
 - Runs on push and pull request
 - Installs dependencies with `npm ci`
-- Executes API tests with Playwright
-- Uploads both Playwright HTML and Monocart reports as build artifacts
+- Executes UI and API tests with Playwright
+- Generates Allure report in single-file mode for artifact portability
+- Uploads Playwright HTML, Monocart, and Allure reports as build artifacts
