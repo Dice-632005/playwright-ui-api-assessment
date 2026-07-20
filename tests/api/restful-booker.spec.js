@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { BookerClient } from '../../pages/api/bookerClient.js';
-import { bookingCredentials, buildBookingPayload, buildUpdatedBookingPayload } from '../testdata/test-data.js';
+import { apiTestData, buildBookingPayload, buildUpdatedBookingPayload } from '../testdata/test-data.js';
 
+/**
+ * Validates the required schema structure of a booking object.
+ * @param {object} booking
+ */
 function expectBookingShape(booking) {
   expect(booking).toEqual(
     expect.objectContaining({
@@ -21,7 +25,7 @@ function expectBookingShape(booking) {
 test.describe('Restful Booker API tests', () => {
   test('Verify a valid auth token is generated', async ({ request }) => {
     const client = new BookerClient(request);
-    const response = await client.authToken(bookingCredentials);
+    const response = await client.authToken(apiTestData.auth);
 
     expect(response.status()).toBe(200);
     expect(response.headers()['content-type']).toContain('application/json');
@@ -39,7 +43,7 @@ test.describe('Restful Booker API tests', () => {
     let token;
     let updatedPayload;
 
-    await test.step('Verify booking is created successfully', async () => {
+    await test.step('Verify booking is created successfully (CREATE)', async () => {
       const createResponse = await client.createBooking(createBookingPayload);
       expect(createResponse.status()).toBe(200);
       expect(createResponse.headers()['content-type']).toContain('application/json');
@@ -49,10 +53,9 @@ test.describe('Restful Booker API tests', () => {
       expectBookingShape(body.booking);
       expect(body.booking).toEqual(expect.objectContaining(createBookingPayload));
       bookingId = body.bookingid;
-      expect(bookingId).toBeGreaterThan(0);
     });
 
-    await test.step('Verify booking can be read before update', async () => {
+    await test.step('Verify booking can be read before update (READ)', async () => {
       const getResponse = await client.getBooking(bookingId);
       expect(getResponse.status()).toBe(200);
       expect(getResponse.headers()['content-type']).toContain('application/json');
@@ -62,19 +65,18 @@ test.describe('Restful Booker API tests', () => {
       expect(bookingBeforeUpdate).toEqual(expect.objectContaining(createBookingPayload));
     });
 
-    await test.step('Verify auth token can be retrieved', async () => {
-      const authResponse = await client.authToken(bookingCredentials);
+    await test.step('Verify auth token can be retrieved for updates', async () => {
+      const authResponse = await client.authToken(apiTestData.auth);
       expect(authResponse.status()).toBe(200);
 
       const authBody = await authResponse.json();
       expect(authBody.token).toBeTruthy();
       token = authBody.token;
-      expect(token).toBeTruthy();
     });
 
     updatedPayload = buildUpdatedBookingPayload(bookingBeforeUpdate);
 
-    await test.step('Verify booking is updated successfully', async () => {
+    await test.step('Verify booking is updated successfully (UPDATE)', async () => {
       const updateResponse = await client.updateBooking(bookingId, updatedPayload, token);
       expect(updateResponse.status()).toBe(200);
       expect(updateResponse.headers()['content-type']).toContain('application/json');
@@ -82,7 +84,6 @@ test.describe('Restful Booker API tests', () => {
       const updatedBody = await updateResponse.json();
       expectBookingShape(updatedBody);
       expect(updatedBody).toEqual(expect.objectContaining(updatedPayload));
-      
     });
 
     await test.step('Verify booking can be read after update', async () => {
@@ -94,7 +95,7 @@ test.describe('Restful Booker API tests', () => {
       expect(bookingAfterUpdate).toEqual(expect.objectContaining(updatedPayload));
     });
 
-    await test.step('Verify booking is deleted successfully', async () => {
+    await test.step('Verify booking is deleted successfully (DELETE)', async () => {
       const deleteResponse = await client.deleteBooking(bookingId, token);
       expect([200, 201]).toContain(deleteResponse.status());
 

@@ -1,36 +1,50 @@
+/**
+ * Resolves required environment variables.
+ * Credentials must always be provided via environment variables.
+ * 
+ * @param {string} envName - The environment variable name
+ * @returns {string}
+ */
 function resolveRequiredEnvValue(envName) {
   const value = process.env[envName];
   if (value && value.trim().length > 0) {
-    return value;
+    return value.trim();
   }
 
-  throw new Error(`Missing required environment variable: ${envName}`);
+  throw new Error(`Missing required environment variable: ${envName}. Please check your .env file or copy from .env.example.`);
 }
 
-const standardUsername = resolveRequiredEnvValue('SAUCE_USERNAME');
-const standardPassword = resolveRequiredEnvValue('SAUCE_PASSWORD');
-const lockedOutUsername = resolveRequiredEnvValue('SAUCE_LOCKED_OUT_USERNAME');
-const lockedOutPassword = resolveRequiredEnvValue('SAUCE_LOCKED_OUT_PASSWORD');
-const problemUsername = resolveRequiredEnvValue('SAUCE_PROBLEM_USERNAME');
-const problemPassword = resolveRequiredEnvValue('SAUCE_PROBLEM_PASSWORD');
-const performanceUsername = resolveRequiredEnvValue('SAUCE_PERFORMANCE_USERNAME');
-const performancePassword = resolveRequiredEnvValue('SAUCE_PERFORMANCE_PASSWORD');
-const errorUsername = resolveRequiredEnvValue('SAUCE_ERROR_USERNAME');
-const errorPassword = resolveRequiredEnvValue('SAUCE_ERROR_PASSWORD');
-const visualUsername = resolveRequiredEnvValue('SAUCE_VISUAL_USERNAME');
-const visualPassword = resolveRequiredEnvValue('SAUCE_VISUAL_PASSWORD');
-
-const bookerUsername = resolveRequiredEnvValue('BOOKER_USERNAME');
-const bookerPassword = resolveRequiredEnvValue('BOOKER_PASSWORD');
-
+/**
+ * Lazy-loaded user credentials to avoid immediate evaluation failure at import time.
+ */
 export const uiTestData = {
-  users: {
-    standard_user: { username: standardUsername, password: standardPassword },
-    locked_out_user: { username: lockedOutUsername, password: lockedOutPassword },
-    problem_user: { username: problemUsername, password: problemPassword },
-    performance_glitch_user: { username: performanceUsername, password: performancePassword },
-    error_user: { username: errorUsername, password: errorPassword },
-    visual_user: { username: visualUsername, password: visualPassword },
+  get users() {
+    return {
+      standard_user: { 
+        username: resolveRequiredEnvValue('SAUCE_USERNAME'), 
+        password: resolveRequiredEnvValue('SAUCE_PASSWORD') 
+      },
+      locked_out_user: { 
+        username: resolveRequiredEnvValue('SAUCE_LOCKED_OUT_USERNAME'), 
+        password: resolveRequiredEnvValue('SAUCE_LOCKED_OUT_PASSWORD') 
+      },
+      problem_user: { 
+        username: resolveRequiredEnvValue('SAUCE_PROBLEM_USERNAME'), 
+        password: resolveRequiredEnvValue('SAUCE_PROBLEM_PASSWORD') 
+      },
+      performance_glitch_user: { 
+        username: resolveRequiredEnvValue('SAUCE_PERFORMANCE_USERNAME'), 
+        password: resolveRequiredEnvValue('SAUCE_PERFORMANCE_PASSWORD') 
+      },
+      error_user: { 
+        username: resolveRequiredEnvValue('SAUCE_ERROR_USERNAME'), 
+        password: resolveRequiredEnvValue('SAUCE_ERROR_PASSWORD') 
+      },
+      visual_user: { 
+        username: resolveRequiredEnvValue('SAUCE_VISUAL_USERNAME'), 
+        password: resolveRequiredEnvValue('SAUCE_VISUAL_PASSWORD') 
+      },
+    };
   },
   products: {
     backpack: { name: 'Sauce Labs Backpack' },
@@ -58,7 +72,12 @@ export const uiTestData = {
 };
 
 export const apiTestData = {
-  auth: { username: bookerUsername, password: bookerPassword },
+  get auth() {
+    return { 
+      username: resolveRequiredEnvValue('BOOKER_USERNAME'), 
+      password: resolveRequiredEnvValue('BOOKER_PASSWORD') 
+    };
+  },
   booking: {
     defaultFirstName: 'Test',
     defaultLastName: 'Automation',
@@ -79,9 +98,7 @@ export const apiTestData = {
   },
 };
 
-export const saucedemoUsers = uiTestData.users;
 export const saucedemoProducts = uiTestData.products;
-export const bookingCredentials = apiTestData.auth;
 export const successfulLoginUsers = [
   'standard_user',
   'problem_user',
@@ -90,6 +107,10 @@ export const successfulLoginUsers = [
   'visual_user',
 ];
 
+/**
+ * Builds a dynamic booking payload for Restful Booker API tests.
+ * @returns {object} Booking payload
+ */
 export function buildBookingPayload() {
   const now = Date.now();
   return {
@@ -105,6 +126,11 @@ export function buildBookingPayload() {
   };
 }
 
+/**
+ * Builds an updated dynamic booking payload.
+ * @param {object} existingBooking - The current booking object to mutate
+ * @returns {object} Updated booking payload
+ */
 export function buildUpdatedBookingPayload(existingBooking) {
   return {
     ...existingBooking,
