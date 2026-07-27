@@ -1,52 +1,45 @@
 import { test, expect } from '../fixtures/pages.js';
 import { uiTestData } from '../testdata/test-data.js';
+import { getDefaultProductNames } from '../helpers/ui-helpers.js';
 
 test.describe('Cart Checkout Tests', () => {
+  const cartProducts = getDefaultProductNames(uiTestData.products);
+
   test('Verify cart totals and checkout completion', async ({ authenticatedInventoryPage, cartPage, checkoutPage }) => {
     const inventoryPage = authenticatedInventoryPage;
     let cartQuantityAfterRemove = 0;
 
     await test.step('Verify items are added to cart', async () => {
-      await inventoryPage.addProductsToCart([
-        uiTestData.products.backpack.name,
-        uiTestData.products.bikeLight.name,
-        uiTestData.products.boltTShirt.name,
-      ]);
+      await inventoryPage.addProductsToCart(cartProducts);
 
-      const cartQuantityAfterAdd = Number(await inventoryPage.getCartQuantity());
-      expect(cartQuantityAfterAdd).toBe(3);
+      const cartQuantityAfterAdd = await inventoryPage.getCartQuantity();
+      expect(cartQuantityAfterAdd).toBe(cartProducts.length);
     });
 
     await test.step('Verify items are removed from cart', async () => {
       await inventoryPage.removeProductFromCart(uiTestData.products.backpack.name);
 
-      cartQuantityAfterRemove = Number(await inventoryPage.getCartQuantity());
+      cartQuantityAfterRemove = await inventoryPage.getCartQuantity();
       expect(cartQuantityAfterRemove).toBe(2);
     });
 
     await test.step('Verify items total is calculated correctly and checkout successfully', async () => {
       await inventoryPage.openCart();
 
-      const cartItems = inventoryPage.page.locator('.cart_item');
-      await expect(cartItems).toHaveCount(cartQuantityAfterRemove);
+      // Assert item count in cart matches expected quantity
+      const itemCount = await cartPage.itemCount();
+      expect(itemCount).toBe(cartQuantityAfterRemove);
 
       await cartPage.checkout();
       await checkoutPage.fillCustomerInformation(uiTestData.checkoutCustomer);
       await checkoutPage.continueToOverview();
-      const cartItemTotal = await checkoutPage.calculateItemsTotal();
-      const cartSubTotal = await checkoutPage.getSummarySubtotal();
-      const cartTax = await checkoutPage.getSummaryTax();
-      const cartTotal = await checkoutPage.getSummaryTotal();
-      const cartCalculatedTotal = cartSubTotal + cartTax;
 
-      expect(cartItemTotal).toBe(cartSubTotal);
-      expect(cartCalculatedTotal).toBeCloseTo(cartTotal, 2);
-      expect(cartTotal).toBeGreaterThan(0);
-      console.log(`Cart quantity after remove: ${cartQuantityAfterRemove}`);
-      console.log(`Cart item total: ${cartItemTotal}`);
-      console.log(`Cart subtotal: ${cartSubTotal}`);
-      console.log(`Cart tax: ${cartTax}`);
-      console.log(`Cart total: ${cartTotal}`);
+      const summary = await checkoutPage.getOverviewFinancialSummary();
+
+      // Assert item calculation accuracy and non-zero total
+      expect(summary.itemTotal).toBe(summary.subtotal);
+      expect(summary.calculatedTotal).toBeCloseTo(summary.total, 2);
+      expect(summary.total).toBeGreaterThan(0);
     });
   });
 });
